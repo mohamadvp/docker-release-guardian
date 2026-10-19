@@ -1,0 +1,21 @@
+# Docker Release Guardian policy
+# Actions: off | warn | fail
+version: 1
+default_action: warn
+
+vulnerabilities:
+  fail_on: [CRITICAL, HIGH]
+  ignore_unfixed: true
+
+dockerfile:
+  require_non_root_user: fail
+  forbid_latest_tag: fail
+  forbid_secrets_in_env: fail
+  forbid_add_remote_url: warn
+
+compose:
+  forbid_privileged: fail
+  forbid_docker_socket_mount: fail
+  forbid_host_network: warn
+
+waivers: []
