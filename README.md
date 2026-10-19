@@ -4,9 +4,6 @@ A policy-driven DevSecOps release gate for Docker projects. It checks a project'
 Docker Compose files (and optionally scans an image or dependencies with Trivy) against a YAML
 policy, prints a report, and returns an exit code so CI pipelines can block a bad release.
 
-> **Status: working core (v0.1).** The pipeline, policy engine, CLI and CI are complete and tested.
-> Rules, report formats and CI extras are partly implemented on purpose; see
-
 ## Install
 
 Requires Python 3.11+. Trivy is optional (only needed for `--image` and `--scan-fs`).
