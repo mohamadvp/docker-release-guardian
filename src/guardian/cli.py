@@ -51,6 +51,17 @@ def main(
 ) -> None:
     """Docker Release Guardian."""
 
+@app.command()
+def init(
+    path: Annotated[Path, typer.Argument(help="Where to write the policy.")] = Path("guardian.yaml"),
+    force: Annotated[bool, typer.Option("--force", help="Overwrite an existing file.")] = False,
+) -> None:
+    """Write a starter policy file."""
+    if path.exists() and not force:
+        _err(f"error: {path} already exists (use --force to overwrite)")
+        raise typer.Exit(EXIT_USAGE_ERROR)
+    path.write_text(DEFAULT_POLICY_YAML, encoding="utf-8")
+    typer.echo(f"Wrote starter policy to {path}")
 
 @app.command()
 def check(
@@ -65,7 +76,7 @@ def check(
         bool, typer.Option("--scan-fs", help="Also scan project dependency files with Trivy.")
     ] = False,
     fmt: Annotated[
-        str, typer.Option("--format", "-f", help="text | json | markdown | sarif")
+        str, typer.Option("--format", "-f", help="text | json | markdown")
     ] = "text",
     output: Annotated[
         Path | None, typer.Option("--output", "-o", help="Write the report to a file.")
@@ -105,20 +116,6 @@ def check(
         sys.stdout.write(report)
 
     raise typer.Exit(EXIT_PASS if decision.passed else EXIT_POLICY_FAIL)
-
-
-@app.command()
-def init(
-    path: Annotated[Path, typer.Argument(help="Where to write the policy.")] = Path("guardian.yaml"),
-    force: Annotated[bool, typer.Option("--force", help="Overwrite an existing file.")] = False,
-) -> None:
-    """Write a starter policy file."""
-    if path.exists() and not force:
-        _err(f"error: {path} already exists (use --force to overwrite)")
-        raise typer.Exit(EXIT_USAGE_ERROR)
-    path.write_text(DEFAULT_POLICY_YAML, encoding="utf-8")
-    typer.echo(f"Wrote starter policy to {path}")
-
 
 @app.command("validate-policy")
 def validate_policy(
