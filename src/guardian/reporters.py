@@ -32,6 +32,7 @@ def render_text(decision: Decision) -> str:
                 out.append(f"             at {_loc(f)}")
 
     out.append(f"Docker Release Guardian {__version__}")
+    out.append(f"INFO: Rule ID Prefixes — DG-DF = Dockerfile rules, DG-DC = Docker Compose rules.")
     section("VIOLATIONS", decision.violations)
     section("WARNINGS", decision.warnings)
     section("WAIVED", decision.waived)
