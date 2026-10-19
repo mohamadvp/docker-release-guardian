@@ -155,6 +155,8 @@ def check_resource_limits(compose: dict[str, Any]) -> list[Hit]:
         limits = resources.get("limits") if isinstance(resources, dict) else None
         if not limits and not svc.get("mem_limit"):
             hits.append(Hit(f"Service '{name}' has neither deploy.resources.limits nor mem_limit."))
+        if not limits and not svc.get("cpus"):
+            hits.append(Hit(f"Service '{name}' has neither deploy.resources.limits nor cpus."))
     return hits
 
 
@@ -236,3 +238,16 @@ def analyze_compose(path: Path) -> list[Finding]:
     if not isinstance(data, dict):
         raise ProjectError(f"{path}: not a valid Compose file (top level must be a mapping)")
     return COMPOSE_RULES.run(data, file=str(path))
+
+@COMPOSE_RULES.rule(
+    id="DG-DC-011",
+    name="require_graceful_shutdown",
+    severity=Severity.MEDIUM,
+    title="Service does not support graceful shutdown",
+)
+def graceful_shutdown(compose: dict[str, Any]) -> list[Hit]:
+    return[
+        Hit(f"Service '{name}' does not explicitly configure")
+        for name, svc in _services(compose).items()
+        if "stop_grace_period" not in svc
+    ]
